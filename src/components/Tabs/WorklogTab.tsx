@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-import { Marker } from '@/components/Marker';
+import { Marker } from '@/components/marker/Marker';
 import { Button } from '@/components/Button';
 
 import { generateId } from '@/sidepanel/utils';
@@ -11,7 +11,7 @@ import type { MarkerProps } from '@/sidepanel/types';
 const initialMarkers: MarkerProps[] = [{ id: 1, hour: 0, minute: 0, task: '' }];
 
 const WorkLogTab = () => {
-  const [markers, setMarkers] = useState<MarkerProps[]>(initialMarkers);
+  const [markers, setMarkers] = useState<MarkerProps[]>(initialMarkers ?? []);
   const [totalTime, setTotalTime] = useState<string>();
   const [totalTimeDecimal, setTotalTimeDecimal] = useState<string>();
 
@@ -87,9 +87,10 @@ const WorkLogTab = () => {
     <div className="space-y-4">
       <div className="p-4 bg-white rounded-lg shadow">
         <div className="flex flex-col justify-center items-center gap-3">
-          {markers.map(marker => (
+          {markers.map((marker, index) => (
             <Marker
               key={marker.id}
+              index={index}
               id={marker.id}
               hour={marker.hour}
               minute={marker.minute}

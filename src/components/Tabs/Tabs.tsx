@@ -22,13 +22,11 @@ const Tabs = ({ tabs }: TabsProps) => {
 
   return (
     <div>
-      <div className="flex flex-row border-b">
+      <div className="flex items-center gap-2 px-4">
         {tabs.map((tab, index) => (
           <TabButton
             key={index}
-            className={`px-4 py-2 border-b-2 ${
-              activeTab === index ? 'border-blue-500' : 'border-transparent'
-            }`}
+            isActiveTab={activeTab === index}
             onClick={() => handleTabClick(index)}
             label={tab.label}
           />
@@ -38,7 +36,7 @@ const Tabs = ({ tabs }: TabsProps) => {
       <div>
         {tabs.map((tab, index) =>
           renderedTabs.has(index) ? (
-            <div key={index} className={`${activeTab === index ? 'block' : 'none'}`}>
+            <div key={index} className={`${activeTab === index ? 'block' : 'hidden'}`}>
               <Suspense fallback={<div>Loading...</div>}>
                 <TabContent Content={tab.content} />
               </Suspense>
