@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactElement, ReactNode } from 'react';
 
 export interface Marker {
   readonly id: number;
@@ -38,6 +38,7 @@ export interface ButtonProps {
   readonly label: string;
   readonly btnClassName?: string;
   readonly onClick?: () => void;
+  readonly icon?: ReactElement;
 }
 
 export type AutocompleteItem = {

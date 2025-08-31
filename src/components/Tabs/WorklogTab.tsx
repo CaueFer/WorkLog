@@ -1,12 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy } from 'react';
 
 import { Marker } from '@/components/marker/Marker';
-import { Button } from '@/components/Button';
-
 import { generateId } from '@/sidepanel/utils';
+import { Button } from '@/components/Button';
+import { GoSync } from 'react-icons/go';
 
 import type { Marker as IMarker } from '@/components/types';
 import type { MarkerProps } from '@/sidepanel/types';
+
+const SelectMarkersModal = lazy(() => import('../SelectMarkersModal'));
 
 const initialMarkers: MarkerProps[] = [{ id: 1, hour: 0, minute: 0, task: '' }];
 
@@ -14,6 +16,7 @@ const WorkLogTab = () => {
   const [markers, setMarkers] = useState<MarkerProps[]>(initialMarkers ?? []);
   const [totalTime, setTotalTime] = useState<string>();
   const [totalTimeDecimal, setTotalTimeDecimal] = useState<string>();
+  const [markersModalOpen, setMarkersModalOpen] = useState(false);
 
   const calculateTotalTime = (format?: boolean) => {
     if (markers.length % 2 !== 0)
@@ -78,51 +81,66 @@ const WorkLogTab = () => {
     );
   };
 
+  const syncJira = () => {
+    setMarkersModalOpen(true);
+  };
+
   useEffect(() => {
     calculateTotalTime();
     calculateTotalTime(true);
   }, [markers]);
 
   return (
-    <div className="space-y-4">
-      <div className="p-4 bg-white rounded-lg shadow">
-        <div className="flex flex-col justify-center items-center gap-3">
-          {markers.map((marker, index) => (
-            <Marker
-              key={marker.id}
-              index={index}
-              id={marker.id}
-              hour={marker.hour}
-              minute={marker.minute}
-              task={marker.task}
-              handleUpdateMarker={handleUpdateMarker}
-              handleRemoveMarker={() => handleRemoveMarker(marker.id)}
+    <>
+      <div className="space-y-4">
+        <div className="p-4 bg-white rounded-lg shadow">
+          <div className="flex flex-col justify-center items-center gap-3">
+            {markers.map((marker, index) => (
+              <Marker
+                key={marker.id}
+                index={index}
+                id={marker.id}
+                hour={marker.hour}
+                minute={marker.minute}
+                task={marker.task}
+                handleUpdateMarker={handleUpdateMarker}
+                handleRemoveMarker={() => handleRemoveMarker(marker.id)}
+              />
+            ))}
+          </div>
+        </div>
+        <div className="p-4 bg-white rounded-lg shadow">
+          <div className="mt-3 space-y-2">
+            <Button
+              label="Adicionar marcador"
+              onClick={handleAddMarker}
+              btnClassName="text-white bg-blue-600 rounded-lg hover:bg-blue-700"
             />
-          ))}
-        </div>
-      </div>
-      <div className="p-4 bg-white rounded-lg shadow">
-        <div className="mt-3 space-y-2">
-          <Button
-            label="Adicionar marcador"
-            onClick={handleAddMarker}
-            btnClassName="text-white bg-blue-600 rounded-lg hover:bg-blue-700"
-          />
-        </div>
-      </div>
-      <div className="p-4 bg-white rounded-lg shadow">
-        <div className="flex-1 mt-3 space-y-2">
-          <div className="text-black text-center text-1xl">
-            <b>Tempo ocupado: </b>
-            {totalTime}
+
+            <Button
+              label="Sincronizar com Jira"
+              icon={<GoSync />}
+              onClick={syncJira}
+              btnClassName="text-white bg-rose-600 rounded-lg hover:bg-rose-700 flex justify-center gap-2"
+            />
           </div>
-          <div className="text-black text-center text-1xl">
-            <b>Tempo ocupado em decimal: </b>
-            {totalTimeDecimal}
+        </div>
+        <div className="p-4 bg-white rounded-lg shadow">
+          <div className="flex-1 mt-3 space-y-2">
+            <div className="text-black text-center text-1xl">
+              <b>Tempo ocupado: </b>
+              {totalTime}
+            </div>
+            <div className="text-black text-center text-1xl">
+              <b>Tempo ocupado em decimal: </b>
+              {totalTimeDecimal}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+
+      {markersModalOpen && <SelectMarkersModal />}
+    </>
   );
 };
 
